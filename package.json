@@ -1,5 +1,5 @@
 {
-  "name": "expressapi",
+  "name": "micro-server",
   "version": "1.0.0",
   "description": "Micro server for cross platform",
   "main": "app.js",
