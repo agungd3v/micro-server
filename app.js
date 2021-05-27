@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
 const api = require('./routes')
 
 app.use(api.job.index)
+app.use(api.job.store)
 app.use(api.auth.login)
 app.use(api.auth.register)
 

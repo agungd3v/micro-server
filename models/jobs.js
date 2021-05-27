@@ -2,9 +2,14 @@ const db = require('../services/db')
 const paginate = require('../helpers/paginate')
 const config = require('../config/database')
 
-async function getAll(page = 1) {
+function getJob (obj) {
+  if (!obj) return {}
+  return obj
+}
+
+async function getAll (page = 1) {
   const offset = paginate.getOffset(page, config.listPerPage)
-  const rows = await db.query('SELECT * FROM jobs LIMIT ?,?', [
+  const rows = await db.singleQueryData('SELECT * FROM jobs LIMIT ?,?', [
     offset,
     config.listPerPage
   ])
@@ -15,6 +20,19 @@ async function getAll(page = 1) {
   return { data, meta }
 }
 
+async function storeData (request) {
+  const { name } = request
+
+  try {
+    const job = await db.query(`INSERT INTO jobs (name) VALUES ('${name}')`)
+
+    return { name }
+  } catch (error) {
+    return error
+  }
+}
+
 module.exports = {
-  getAll
+  getAll,
+  storeData
 }

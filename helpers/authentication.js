@@ -14,7 +14,6 @@ async function login (req, res) {
   const query = await db.singleQueryData(`SELECT * FROM users where email='${email}'`)
 
   const user = getUser(query)
-  console.log(user)
 
   if (user) {
     const passwordVerify = hash.verify(password, user.password)
@@ -53,8 +52,7 @@ async function register (req, res) {
     
     res.json({
       status: true,
-      message: 'Successfully create user',
-      data: {
+      message: {
         name: name,
         email: email
       }
