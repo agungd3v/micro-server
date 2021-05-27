@@ -8,10 +8,8 @@ async function getAll (page = 1) {
     offset,
     config.listPerPage
   ])
-
   const data = paginate.getRows(rows)
   const meta = { page }
-
   return { data, meta }
 }
 

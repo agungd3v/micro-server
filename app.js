@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const port = 3000
-require('dotenv').config()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
@@ -15,10 +14,9 @@ app.get('/', (req, res) => {
 
 const api = require('./routes')
 
-app.use(api.job.index)
-app.use(api.job.store)
-app.use(api.auth.login)
-app.use(api.auth.register)
+app.use(api.login)
+app.use(api.register)
+app.use(api.jobs)
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
