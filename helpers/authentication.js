@@ -11,21 +11,33 @@ function getUser (obj) {
 async function login (req, res) {
   const { email, password } = req.body;
 
-  const query = await db.singleQueryData(`SELECT * FROM users where email='${email}' AND password='${password}'`)
+  const query = await db.singleQueryData(`SELECT * FROM users where email='${email}'`)
 
   const user = getUser(query)
+  console.log(user)
 
   if (user) {
-    // Generate an access token
-    const accessToken = jwt.sign({ email: user.email,  role: user.role }, process.env.SECRET_TOKEN);
-
-    res.json({
-      status: true,
-      user: user,
-      accessToken
-    });
+    const passwordVerify = hash.verify(password, user.password)
+    
+    if (passwordVerify) {
+      const accessToken = jwt.sign({ email: user.email, id: user.id }, process.env.SECRET_TOKEN, { expiresIn: '1h' });
+  
+      res.json({
+        status: true,
+        message: user,
+        token: accessToken
+      });
+    } else {
+      res.json({
+        status: false,
+        message: 'Incorrect password, check your password again'
+      })
+    }
   } else {
-    res.send('Username or password incorrect');
+    res.json({
+      status: false,
+      message: 'Incorrect email or password'
+    })
   }
 }
 
