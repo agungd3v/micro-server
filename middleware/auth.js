@@ -1,22 +1,28 @@
 const jwt = require('jsonwebtoken')
-const accessTokenSecret = 'agungd3v';
+require('dotenv').config()
 
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
-      const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1];
 
-      jwt.verify(token, accessTokenSecret, (err, user) => {
-          if (err) {
-              return res.sendStatus(403);
-          }
+    jwt.verify(token, process.env.SECRET_TOKEN, (err, user) => {
+      if (err) {
+        return res.json({
+          status: false,
+          message: 'Access Forbidden'
+        })
+      }
 
-          req.user = user;
-          next();
-      });
+      req.user = user;
+      next();
+    });
   } else {
-      res.sendStatus(401);
+    res.json({
+      status: false,
+      message: 'Unauthorize',
+    })
   }
 };
 

@@ -17,6 +17,7 @@ const api = require('./routes')
 
 app.use(api.job.index)
 app.use(api.auth.login)
+app.use(api.auth.register)
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
