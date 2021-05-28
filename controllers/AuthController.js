@@ -1,11 +1,59 @@
-const express = require('express')
-const router = express.Router()
-const authenctication = require('../helpers/authentication')
+const db = require('../services/db')
+const jwt = require('jsonwebtoken')
+const hash = require('password-hash')
+require('dotenv').config()
 
-const login = router.post('/login', authenctication.login)
-const register = router.post('/register', authenctication.register)
-
-module.exports = {
-  login,
-  register
+function getUser(obj) {
+  if (!obj) return {}
+  return obj
 }
+
+const auth = {
+  login: async (req, res) => {
+    const { email, password } = req.body;
+    const query = await db.singleQueryData(`SELECT * FROM users where email='${email}'`)
+    const user = getUser(query)
+    if (user) {
+      const passwordVerify = hash.verify(password, user.password)
+      if (passwordVerify) {
+        const accessToken = jwt.sign({ email: user.email, id: user.id }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
+        res.json({
+          status: true,
+          message: user,
+          token: accessToken
+        })
+      } else {
+        res.json({
+          status: false,
+          message: 'Incorrect password, check your password again'
+        })
+      }
+    } else {
+      res.json({
+        status: false,
+        message: 'Incorrect email or password'
+      })
+    }
+  },
+  register: async (req, res) => {
+    const { name, email, password } = req.body
+    const passwordHash = hash.generate(password)
+    try {
+      await db.singleQueryData(`INSERT INTO users (name, email, password) VALUES ('${name}', '${email}', '${passwordHash}')`)
+      res.json({
+        status: true,
+        message: {
+          name: name,
+          email: email
+        }
+      })
+    } catch (error) {
+      res.json({
+        status: false,
+        message: 'Error : ' + error.message
+      })
+    }
+  }
+}
+
+module.exports = auth

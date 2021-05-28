@@ -20,7 +20,7 @@ const jobs = router.prefix('/jobs', auth.authenticateJWT, (router) => {
 })
 
 module.exports = {
-  jobs,
   login,
-  register
+  register,
+  jobs
 }
